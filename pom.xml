@@ -8,10 +8,10 @@
 		<version>4.0.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.james</groupId>
-	<artifactId>learn</artifactId>
+	<groupId>james</groupId>
+	<artifactId>expense_tracker</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>learn</name>
+	<name/>
 	<description/>
 	<url/>
 	<licenses>

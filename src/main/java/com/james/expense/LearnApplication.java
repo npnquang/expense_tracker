@@ -1,4 +1,4 @@
-package com.james.learn;
+package com.james.expense;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
