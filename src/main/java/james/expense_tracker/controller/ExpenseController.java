@@ -2,22 +2,21 @@ package james.expense_tracker.controller;
 
 import java.util.List;
 
-import james.expense_tracker.dto.expense.ExpenseEntry;
-import james.expense_tracker.model.ExpenseType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-
-import james.expense_tracker.service.ExpenseService;
 import james.expense_tracker.dto.expense.CreateExpenseRequest;
 import james.expense_tracker.dto.expense.CreateExpenseResponse;
-import org.springframework.web.server.ResponseStatusException;
+import james.expense_tracker.dto.expense.ExpenseEntry;
+import james.expense_tracker.model.ExpenseType;
+import james.expense_tracker.service.ExpenseService;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -30,8 +29,7 @@ public class ExpenseController {
 
     @PostMapping
     public ResponseEntity<CreateExpenseResponse> createExpense(
-            @RequestBody CreateExpenseRequest request
-    ) {
+            @RequestBody CreateExpenseRequest request) {
         CreateExpenseResponse response = this.expenseService.createExpense(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -43,9 +41,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<ExpenseEntry> getExpenseById(
-            @PathVariable Long id
-    ) {
+    public ResponseEntity<ExpenseEntry> getExpenseById(@PathVariable Long id) {
         try {
             ExpenseEntry record = this.expenseService.getExpenseById(id);
             return ResponseEntity.status(HttpStatus.OK).body(record);
@@ -55,17 +51,14 @@ public class ExpenseController {
     }
 
     @GetMapping("/type/{type}")
-    public ResponseEntity<List<ExpenseEntry>> getExpensesByType(
-            @PathVariable ExpenseType type
-    ) {
+    public ResponseEntity<List<ExpenseEntry>> getExpensesByType(@PathVariable ExpenseType type) {
         List<ExpenseEntry> records = this.expenseService.getExpenseByType(type);
         return ResponseEntity.status(HttpStatus.OK).body(records);
     }
 
     @GetMapping("/period")
     public ResponseEntity<List<ExpenseEntry>> getExpenseByPeriod(
-            @RequestBody(required = false) ExpenseType type
-    ) {
+            @RequestBody(required = false) ExpenseType type) {
         List<ExpenseEntry> records;
         if (type != null) {
             records = this.expenseService.getExpenseByType(type);

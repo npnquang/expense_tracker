@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import james.expense_tracker.dto.expense.ExpenseEntry;
 import org.springframework.stereotype.Service;
 
 import james.expense_tracker.dto.expense.CreateExpenseRequest;
 import james.expense_tracker.dto.expense.CreateExpenseResponse;
+import james.expense_tracker.dto.expense.ExpenseEntry;
 import james.expense_tracker.model.ExpenseType;
 
 @Service
@@ -29,11 +29,13 @@ public class ExpenseService {
     }
 
     public ExpenseEntry getExpenseById(Long id) {
-        return expenses.stream().findFirst().filter(e -> e.id().equals(id)).orElseThrow(() -> new RuntimeException("Expense not found"));
+        return expenses.stream()
+                .findFirst()
+                .filter(e -> e.id().equals(id))
+                .orElseThrow(() -> new RuntimeException("Expense not found"));
     }
 
     public List<ExpenseEntry> getExpenseByType(ExpenseType type) {
         return expenses.stream().filter(e -> e.type().equals(type)).toList();
     }
-
 }
