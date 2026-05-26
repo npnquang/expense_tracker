@@ -29,7 +29,8 @@ public class ExpenseController {
 
     @PostMapping
     public ResponseEntity<CreateExpenseResponse> createExpense(
-            @RequestBody CreateExpenseRequest request) {
+            @RequestBody CreateExpenseRequest request
+    ) {
         CreateExpenseResponse response = this.expenseService.createExpense(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
