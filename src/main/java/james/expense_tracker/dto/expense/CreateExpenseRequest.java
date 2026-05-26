@@ -1,4 +1,6 @@
 package james.expense_tracker.dto.expense;
 
-public record CreateExpenseRequest(String description, double amount) {
+import james.expense_tracker.model.ExpenseType;
+
+public record CreateExpenseRequest(String description, double amount, ExpenseType type) {
 }
