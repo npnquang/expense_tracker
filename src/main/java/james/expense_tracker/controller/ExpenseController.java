@@ -2,6 +2,7 @@ package james.expense_tracker.controller;
 
 import java.util.List;
 
+import james.expense_tracker.dto.expense.ExpenseEntry;
 import james.expense_tracker.model.ExpenseType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,17 +37,17 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ExpenseService.ExpenseEntry>> getExpenses() {
-        List<ExpenseService.ExpenseEntry> expenseEntries = expenseService.getExpenses();
+    public ResponseEntity<List<ExpenseEntry>> getExpenses() {
+        List<ExpenseEntry> expenseEntries = expenseService.getExpenses();
         return ResponseEntity.status(HttpStatus.OK).body(expenseEntries);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<ExpenseService.ExpenseEntry> getExpenseById(
+    public ResponseEntity<ExpenseEntry> getExpenseById(
             @PathVariable Long id
     ) {
         try {
-            ExpenseService.ExpenseEntry record = this.expenseService.getExpenseById(id);
+            ExpenseEntry record = this.expenseService.getExpenseById(id);
             return ResponseEntity.status(HttpStatus.OK).body(record);
         } catch (RuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -54,10 +55,23 @@ public class ExpenseController {
     }
 
     @GetMapping("/type/{type}")
-    public ResponseEntity<List<ExpenseService.ExpenseEntry>> getExpensesByType(
+    public ResponseEntity<List<ExpenseEntry>> getExpensesByType(
             @PathVariable ExpenseType type
     ) {
-        List<ExpenseService.ExpenseEntry> records = this.expenseService.getExpenseByType(type);
+        List<ExpenseEntry> records = this.expenseService.getExpenseByType(type);
+        return ResponseEntity.status(HttpStatus.OK).body(records);
+    }
+
+    @GetMapping("/period")
+    public ResponseEntity<List<ExpenseEntry>> getExpenseByPeriod(
+            @RequestBody(required = false) ExpenseType type
+    ) {
+        List<ExpenseEntry> records;
+        if (type != null) {
+            records = this.expenseService.getExpenseByType(type);
+        } else {
+            records = this.expenseService.getExpenses();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(records);
     }
 }

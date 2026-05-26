@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import james.expense_tracker.dto.expense.ExpenseEntry;
 import org.springframework.stereotype.Service;
 
 import james.expense_tracker.dto.expense.CreateExpenseRequest;
@@ -35,6 +36,4 @@ public class ExpenseService {
         return expenses.stream().filter(e -> e.type().equals(type)).toList();
     }
 
-    public record ExpenseEntry(Long id, String description, double amount, ExpenseType type) {
-    }
 }
