@@ -1,10 +1,13 @@
 package james.expense_tracker.service;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import james.expense_tracker.dto.expense.GetExpenseByDateRequest;
 import org.springframework.stereotype.Service;
 
 import james.expense_tracker.dto.expense.CreateExpenseRequest;
@@ -20,7 +23,8 @@ public class ExpenseService {
 
     public CreateExpenseResponse createExpense(CreateExpenseRequest request) {
         long id = nextId.getAndIncrement();
-        expenses.add(new ExpenseEntry(id, request.description(), request.amount(), request.type()));
+        ZonedDateTime createdAt = ZonedDateTime.now(ZoneId.of("UTC"));
+        expenses.add(new ExpenseEntry(id, request.description(), request.amount(), request.type(), createdAt));
         return new CreateExpenseResponse(id);
     }
 
@@ -37,5 +41,11 @@ public class ExpenseService {
 
     public List<ExpenseEntry> getExpenseByType(ExpenseType type) {
         return expenses.stream().filter(e -> e.type().equals(type)).toList();
+    }
+
+    public List<ExpenseEntry> getExpenseByDate(GetExpenseByDateRequest request) {
+        ZonedDateTime startDate = request.startDate();
+        ZonedDateTime endDate = request.endDate();
+        return expenses.stream().filter(e -> e.createdAt().isAfter(startDate) && e.createdAt().isBefore(endDate)).toList();
     }
 }

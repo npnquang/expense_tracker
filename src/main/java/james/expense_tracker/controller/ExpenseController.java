@@ -2,6 +2,7 @@ package james.expense_tracker.controller;
 
 import java.util.List;
 
+import james.expense_tracker.dto.expense.GetExpenseByDateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,14 +58,9 @@ public class ExpenseController {
     }
 
     @GetMapping("/period")
-    public ResponseEntity<List<ExpenseEntry>> getExpenseByPeriod(
-            @RequestBody(required = false) ExpenseType type) {
-        List<ExpenseEntry> records;
-        if (type != null) {
-            records = this.expenseService.getExpenseByType(type);
-        } else {
-            records = this.expenseService.getExpenses();
-        }
+    public ResponseEntity<List<ExpenseEntry>> getExpenseByDate(
+            @RequestBody GetExpenseByDateRequest request) {
+        List<ExpenseEntry> records = this.expenseService.getExpenseByDate(request);
         return ResponseEntity.status(HttpStatus.OK).body(records);
     }
 }
