@@ -34,6 +34,7 @@ public class ExpenseService {
     public List<ExpenseEntry> getExpenseByType(ExpenseType type) {
         return expenses.stream().filter(e -> e.type().equals(type)).toList();
     }
+
     public record ExpenseEntry(Long id, String description, double amount, ExpenseType type) {
     }
 }
