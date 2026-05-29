@@ -1,19 +1,19 @@
-drop table if exists expense cascade;
-drop type if exists expense_type;
+DROP TABLE IF EXISTS expense CASCADE;
+DROP TYPE IF EXISTS expense_type;
 
-create type expense_type as enum (
+CREATE TYPE expense_type AS ENUM (
     'FOOD',
     'TRANSPORT',
     'HOUSING',
     'UTILITIES',
     'OTHER'
-);
+    );
 
-create table expense
+CREATE TABLE expense
 (
-    id BIGINT primary key generated always as identity,
-    description varchar(255)   not null,
-    amount      numeric(10, 2) not null,
-    type        expense_type   not null,
-    created_at  date           not null
+    id          BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    description VARCHAR(255)   NOT NULL,
+    amount      NUMERIC(10, 2) NOT NULL,
+    type        expense_type   NOT NULL,
+    created_at  timestamptz    NOT NULL DEFAULT NOW()
 );
