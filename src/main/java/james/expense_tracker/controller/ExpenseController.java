@@ -1,23 +1,18 @@
 package james.expense_tracker.controller;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import james.expense_tracker.dto.expense.CreateExpenseRequest;
 import james.expense_tracker.dto.expense.CreateExpenseResponse;
 import james.expense_tracker.dto.expense.ExpenseEntry;
-import james.expense_tracker.dto.expense.GetExpenseByDateRequest;
 import james.expense_tracker.model.ExpenseType;
 import james.expense_tracker.service.ExpenseService;
 
@@ -67,13 +62,13 @@ public class ExpenseController {
 
     @GetMapping("/period")
     public ResponseEntity<List<ExpenseEntry>> getExpenseByDate(
-            @RequestBody GetExpenseByDateRequest request) {
-        List<ExpenseEntry> records = this.expenseService.getExpenseByDate(request);
+            @RequestParam OffsetDateTime startDate, @RequestParam OffsetDateTime endDate) {
+        List<ExpenseEntry> records = this.expenseService.getExpenseByDate(startDate, endDate);
         logger.info(
                 "Retrieved {} expenses between dates: {} and {}",
                 records.size(),
-                request.startDate(),
-                request.endDate());
+                startDate,
+                endDate);
         return ResponseEntity.status(HttpStatus.OK).body(records);
     }
 }
