@@ -34,7 +34,7 @@ public class ExpenseService {
         return new CreateExpenseResponse(id);
     }
 
-    private static final Set<String> VALID_SORT_FIELDS = Set.of("id", "description", "amount", "type", "createdAt");
+    private static final Set<String> VALID_SORT_FIELDS = Set.of("id", "amount", "createdAt");
     private static final Set<String> VALID_DIRECTIONS = Set.of("asc", "desc");
 
     public Page<ExpenseEntry> getExpenses(int page, int size, String sortBy, String direction) {
