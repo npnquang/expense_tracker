@@ -7,8 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import james.expense_tracker.dto.expense.CreateExpenseRequest;
 import james.expense_tracker.dto.expense.CreateExpenseResponse;
@@ -43,21 +48,16 @@ public class ExpenseController {
 
     @GetMapping("/id/{id}")
     public ResponseEntity<ExpenseEntry> getExpenseById(@PathVariable Long id) {
-        try {
-            ExpenseEntry record = this.expenseService.getExpenseById(id);
-            logger.info("Retrieved expense with id: {}", id);
-            return ResponseEntity.status(HttpStatus.OK).body(record);
-        } catch (RuntimeException e) {
-            logger.info("Error retrieving expense with id: {}", id, e);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        ExpenseEntry record = this.expenseService.getExpenseById(id);
+        logger.info("Retrieved expense with id: {}", id);
+        return ResponseEntity.ok(record);
     }
 
     @GetMapping("/type/{type}")
     public ResponseEntity<List<ExpenseEntry>> getExpensesByType(@PathVariable ExpenseType type) {
         List<ExpenseEntry> records = this.expenseService.getExpenseByType(type);
         logger.info("Retrieved {} expenses of type: {}", records.size(), type);
-        return ResponseEntity.status(HttpStatus.OK).body(records);
+        return ResponseEntity.ok(records);
     }
 
     @GetMapping("/period")
@@ -69,6 +69,6 @@ public class ExpenseController {
                 records.size(),
                 startDate,
                 endDate);
-        return ResponseEntity.status(HttpStatus.OK).body(records);
+        return ResponseEntity.ok(records);
     }
 }
