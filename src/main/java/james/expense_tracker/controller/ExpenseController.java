@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,10 +41,15 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ExpenseEntry>> getExpenses() {
-        List<ExpenseEntry> expenseEntries = expenseService.getExpenses();
-        logger.info("Retrieved {} expenses", expenseEntries.size());
-        return ResponseEntity.status(HttpStatus.OK).body(expenseEntries);
+    public ResponseEntity<Page<ExpenseEntry>> getExpenses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
+        Page<ExpenseEntry> expenseEntries = expenseService.getExpenses(page, size, sortBy, direction);
+        logger.info("Retrieved {} expenses (page={}, size={}, sortBy={}, direction={})",
+                expenseEntries.getNumberOfElements(), page, size, sortBy, direction);
+        return ResponseEntity.ok(expenseEntries);
     }
 
     @GetMapping("/id/{id}")

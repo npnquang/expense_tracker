@@ -2,10 +2,15 @@ package james.expense_tracker.service;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import james.expense_tracker.dto.expense.CreateExpenseRequest;
 import james.expense_tracker.dto.expense.CreateExpenseResponse;
@@ -29,18 +34,33 @@ public class ExpenseService {
         return new CreateExpenseResponse(id);
     }
 
-    public List<ExpenseEntry> getExpenses() {
-        List<Expense> expenses = this.expenseRepository.findAll();
-        return expenses.stream()
-                .map(
-                        e ->
-                                new ExpenseEntry(
-                                        e.getId(),
-                                        e.getDescription(),
-                                        e.getAmount(),
-                                        e.getType(),
-                                        e.getCreatedAt()))
-                .toList();
+    private static final Set<String> VALID_SORT_FIELDS = Set.of("id", "description", "amount", "type", "createdAt");
+    private static final Set<String> VALID_DIRECTIONS = Set.of("asc", "desc");
+
+    public Page<ExpenseEntry> getExpenses(int page, int size, String sortBy, String direction) {
+        if (!VALID_SORT_FIELDS.contains(sortBy)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format("Invalid sortBy field: '%s'. Valid fields: %s", sortBy, VALID_SORT_FIELDS));
+        }
+        if (!VALID_DIRECTIONS.contains(direction.toLowerCase())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format("Invalid direction: '%s'. Use 'asc' or 'desc'", direction));
+        }
+        Sort sort = direction.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Expense> expenses = this.expenseRepository.findAll(pageable);
+        return expenses.map(
+                e ->
+                        new ExpenseEntry(
+                                e.getId(),
+                                e.getDescription(),
+                                e.getAmount(),
+                                e.getType(),
+                                e.getCreatedAt()));
     }
 
     public ExpenseEntry getExpenseById(Long id) {
