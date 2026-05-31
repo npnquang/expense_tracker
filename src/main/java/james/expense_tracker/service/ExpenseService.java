@@ -49,7 +49,7 @@ public class ExpenseService {
                         .findById(id)
                         .orElseThrow(
                                 () ->
-                                        new HttpClientErrorException(
+                                        new ResponseStatusException(
                                                 HttpStatus.NOT_FOUND,
                                                 String.format("Expense of id %d not found", id)));
         return new ExpenseEntry(
