@@ -46,9 +46,15 @@ public class ExpenseController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String direction) {
-        Page<ExpenseEntry> expenseEntries = expenseService.getExpenses(page, size, sortBy, direction);
-        logger.info("Retrieved {} expenses (page={}, size={}, sortBy={}, direction={})",
-                expenseEntries.getNumberOfElements(), page, size, sortBy, direction);
+        Page<ExpenseEntry> expenseEntries =
+                expenseService.getExpenses(page, size, sortBy, direction);
+        logger.info(
+                "Retrieved {} expenses (page={}, size={}, sortBy={}, direction={})",
+                expenseEntries.getNumberOfElements(),
+                page,
+                size,
+                sortBy,
+                direction);
         return ResponseEntity.ok(expenseEntries);
     }
 

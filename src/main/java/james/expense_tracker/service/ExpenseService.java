@@ -41,16 +41,19 @@ public class ExpenseService {
         if (!VALID_SORT_FIELDS.contains(sortBy)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    String.format("Invalid sortBy field: '%s'. Valid fields: %s", sortBy, VALID_SORT_FIELDS));
+                    String.format(
+                            "Invalid sortBy field: '%s'. Valid fields: %s",
+                            sortBy, VALID_SORT_FIELDS));
         }
         if (!VALID_DIRECTIONS.contains(direction.toLowerCase())) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     String.format("Invalid direction: '%s'. Use 'asc' or 'desc'", direction));
         }
-        Sort sort = direction.equalsIgnoreCase("asc")
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+        Sort sort =
+                direction.equalsIgnoreCase("asc")
+                        ? Sort.by(sortBy).ascending()
+                        : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Expense> expenses = this.expenseRepository.findAll(pageable);
         return expenses.map(
