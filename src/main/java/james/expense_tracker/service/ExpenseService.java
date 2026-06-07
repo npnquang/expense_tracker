@@ -22,6 +22,8 @@ import james.expense_tracker.repository.ExpenseRepository;
 @Service
 public class ExpenseService {
     private final ExpenseRepository expenseRepository;
+    private static final Set<String> VALID_SORT_FIELDS = Set.of("id", "amount", "createdAt");
+    private static final Set<String> VALID_DIRECTIONS = Set.of("asc", "desc");
 
     public ExpenseService(ExpenseRepository expenseRepository) {
         this.expenseRepository = expenseRepository;
@@ -33,9 +35,6 @@ public class ExpenseService {
         Long id = saved.getId();
         return new CreateExpenseResponse(id);
     }
-
-    private static final Set<String> VALID_SORT_FIELDS = Set.of("id", "amount", "createdAt");
-    private static final Set<String> VALID_DIRECTIONS = Set.of("asc", "desc");
 
     public Page<ExpenseEntry> getExpenses(int page, int size, String sortBy, String direction) {
         if (!VALID_SORT_FIELDS.contains(sortBy)) {
