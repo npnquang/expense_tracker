@@ -6,17 +6,12 @@ set_env:
 	set +a
 
 qa:
-	make set_env
 	./mvnw spotless:check
-	./mvnw verify
 
 make apply_qa:
-	make set_env
 	./mvnw spotless:apply
-	./mvnw verify
 
 up:
-	make set_env
 	docker compose up -d --force-recreate
 
 down:
@@ -29,3 +24,6 @@ server:
 server_dev:
 	make up
 	./mvnw -Pdev spring-boot:run
+
+test:
+	./mvnw test
