@@ -26,6 +26,6 @@ server:
 	make up
 	./mvnw spring-boot:run
 
-server_up:
+server_dev:
 	make up
 	./mvnw -Pdev spring-boot:run
