@@ -6,7 +6,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
-@ActiveProfiles("test")
 @SpringBootTest
 class ExpenseTrackerApplicationTests {
     @DynamicPropertySource
