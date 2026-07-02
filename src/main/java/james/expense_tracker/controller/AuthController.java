@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import james.expense_tracker.dto.auth.*;
-import james.expense_tracker.dto.user.RegisterUserRequest;
-import james.expense_tracker.dto.user.RegisterUserResponse;
 import james.expense_tracker.service.AuthService;
 
 @RestController
@@ -20,11 +18,6 @@ public class AuthController {
     @PostMapping("/api/auth/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
         return authService.login(request);
-    }
-
-    @PostMapping("/api/auth/register")
-    public RegisterUserResponse register(@RequestBody RegisterUserRequest request) {
-        return authService.registerUser(request);
     }
 
     @PostMapping("/api/auth/logout")
