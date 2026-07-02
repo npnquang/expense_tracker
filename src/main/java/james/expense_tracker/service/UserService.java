@@ -1,8 +1,6 @@
 package james.expense_tracker.service;
 
 import java.time.Duration;
-import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -27,7 +25,6 @@ public class UserService {
     private final JwtService jwtService;
     private final TokenHashService tokenHashService;
     private final RedisService redisService;
-    private final Map<String, BiFunction<String, Long, User>> findUserByMap;
 
     public UserService(
             UserRepository userRepository,
@@ -40,18 +37,6 @@ public class UserService {
         this.jwtService = jwtService;
         this.tokenHashService = tokenHashService;
         this.redisService = redisService;
-        this.findUserByMap =
-                Map.of(
-                        "username",
-                                (value, excludeId) -> {
-                                    return this.userRepository.findByUsernameAndIdNot(
-                                            value, excludeId);
-                                },
-                        "email",
-                                (value, excludeId) -> {
-                                    return this.userRepository.findByEmailAndIdNot(
-                                            value, excludeId);
-                                });
     }
 
     public RegisterUserResponse registerUser(RegisterUserRequest request) {
