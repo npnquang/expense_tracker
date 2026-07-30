@@ -7,6 +7,7 @@ import java.util.function.Function;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import io.jsonwebtoken.Claims;
@@ -92,7 +93,6 @@ public class UserService {
 
     private <T> void updateField(
             T newValue,
-            Long userId,
             Function<T, User> findConflict,
             Consumer<T> setter,
             String conflictMessage) {
@@ -105,6 +105,7 @@ public class UserService {
         setter.accept(newValue);
     }
 
+    @Transactional
     public UpdateProfileResponse updateProfile(UpdateProfileRequest request) {
         String newEmail = request.newEmail();
         String newUsername = request.newUserName();
@@ -124,17 +125,15 @@ public class UserService {
 
         updateField(
                 request.newEmail(),
-                request.userId(),
                 v -> this.userRepository.findByEmailAndIdNot(v, user.getId()),
                 user::setEmail,
                 "Email already exists");
 
         updateField(
-                request.newEmail(),
-                request.userId(),
-                v -> this.userRepository.findByEmailAndIdNot(v, user.getId()),
-                user::setEmail,
-                "Email already exists");
+                request.newUserName(),
+                v -> this.userRepository.findByUsernameAndIdNot(v, user.getId()),
+                user::setUsername,
+                "Username already exists");
 
         return new UpdateProfileResponse(
                 new UserInfo(user.getId(), user.getUsername(), user.getEmail(), user.getRole()));

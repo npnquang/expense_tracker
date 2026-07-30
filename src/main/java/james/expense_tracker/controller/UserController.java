@@ -2,6 +2,7 @@ package james.expense_tracker.controller;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import james.expense_tracker.dto.user.RegisterUserRequest;
 import james.expense_tracker.dto.user.RegisterUserResponse;
@@ -9,6 +10,7 @@ import james.expense_tracker.dto.user.UpdateProfileRequest;
 import james.expense_tracker.dto.user.UpdateProfileResponse;
 import james.expense_tracker.service.UserService;
 
+@RestController
 public class UserController {
     private final UserService userService;
 
