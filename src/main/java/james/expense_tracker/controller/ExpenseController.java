@@ -1,5 +1,6 @@
 package james.expense_tracker.controller;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import james.expense_tracker.dto.expense.CreateExpenseRequest;
 import james.expense_tracker.dto.expense.CreateExpenseResponse;
 import james.expense_tracker.dto.expense.ExpenseEntry;
+import james.expense_tracker.dto.expense.UpdateExpenseRequest;
 import james.expense_tracker.model.ExpenseType;
 import james.expense_tracker.service.ExpenseService;
 
@@ -82,5 +85,23 @@ public class ExpenseController {
                 startDate,
                 endDate);
         return ResponseEntity.ok(records);
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<Void> updateExpense(@RequestBody UpdateExpenseRequest request) {
+        String newDescription = request.newDescription();
+        BigDecimal newAmount = request.newAmount();
+        ExpenseType newType = request.newType();
+        Long id = request.id();
+        this.expenseService.updateExpense(request);
+        logger.info(
+            "Updated expense with id {} with request: description={}, amount={}, type={}",
+            id,
+            newDescription,
+            newAmount,
+            newType
+        );
+        
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

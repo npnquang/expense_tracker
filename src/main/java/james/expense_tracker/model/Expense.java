@@ -67,6 +67,18 @@ public class Expense {
         return createdAt;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public void setType(ExpenseType type) {
+        this.type = type;
+    }
+
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) {
