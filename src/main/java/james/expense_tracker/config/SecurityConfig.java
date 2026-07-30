@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +20,7 @@ public class SecurityConfig {
             throws Exception {
         return http
                 // REST API: disable CSRF since we are not using browser sessions
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.disable())
                 // Not to create/user HTTP sessions
                 // (since we are not using browser sessions)
                 // Each request must authenticate itself
@@ -38,8 +37,8 @@ public class SecurityConfig {
                                         .anyRequest()
                                         .authenticated())
                 // Keep API behavior clean (no default login page/basic prompt)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(form -> form.disable())
+                .httpBasic(httpConfigurer -> httpConfigurer.disable())
                 .exceptionHandling(
                         handling ->
                                 handling.authenticationEntryPoint(
