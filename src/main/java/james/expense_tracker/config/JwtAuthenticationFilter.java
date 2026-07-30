@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         try {
-            // Only accept access tokens — reject refresh tokens hitting protected endpoints
+            // Only accept access tokens - reject refresh tokens hitting protected endpoints
             if (!jwtService.isAccessToken(token)) {
                 filterChain.doFilter(request, response);
                 return;
