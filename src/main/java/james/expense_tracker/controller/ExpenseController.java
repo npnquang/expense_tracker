@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import james.expense_tracker.dto.expense.CreateExpenseRequest;
 import james.expense_tracker.dto.expense.CreateExpenseResponse;
 import james.expense_tracker.dto.expense.ExpenseEntry;
@@ -37,7 +38,7 @@ public class ExpenseController {
 
     @PostMapping
     public ResponseEntity<CreateExpenseResponse> createExpense(
-            @RequestBody CreateExpenseRequest request) {
+            @Valid @RequestBody CreateExpenseRequest request) {
         CreateExpenseResponse response = this.expenseService.createExpense(request);
         logger.info("Created expense with id: {}", response.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
