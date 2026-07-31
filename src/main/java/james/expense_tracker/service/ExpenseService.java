@@ -3,7 +3,6 @@ package james.expense_tracker.service;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +20,7 @@ import james.expense_tracker.dto.expense.UpdateExpenseRequest;
 import james.expense_tracker.model.Expense;
 import james.expense_tracker.model.ExpenseType;
 import james.expense_tracker.repository.ExpenseRepository;
+import james.expense_tracker.utils.Utils;
 
 @Service
 public class ExpenseService {
@@ -122,15 +122,6 @@ public class ExpenseService {
         this.expenseRepository.delete(expense);
     }
 
-
-    private <T> void updateField(T newValue, Consumer<T> setter) {
-        if (newValue == null) {
-                return;
-        }
-
-        setter.accept(newValue);
-    }
-
     @Transactional
     public void updateExpense(UpdateExpenseRequest request) {
         Long expenseId = request.id();
@@ -139,8 +130,8 @@ public class ExpenseService {
                 .orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Expense of id %d not found", expenseId)));
         
-        updateField(request.newAmount(), expense::setAmount);
-        updateField(request.newDescription(), expense::setDescription);
-        updateField(request.newType(), expense::setType);
+        Utils.updateField(request.newAmount(), expense::setAmount);
+        Utils.updateField(request.newDescription(), expense::setDescription);
+        Utils.updateField(request.newType(), expense::setType);
     }
 }

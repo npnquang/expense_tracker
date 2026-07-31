@@ -1,15 +1,17 @@
 package james.expense_tracker.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import james.expense_tracker.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
 
-    User findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
-    User findByEmailAndIdNot(String email, Long id);
+    Optional<User> findByEmailAndIdNot(String email, Long id);
 
-    User findByUsernameAndIdNot(String username, Long id);
+    Optional<User> findByUsernameAndIdNot(String username, Long id);
 }

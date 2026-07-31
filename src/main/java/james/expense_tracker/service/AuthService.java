@@ -29,11 +29,10 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         String username = request.username();
 
-        User user = this.userRepository.findByUsername(username);
-        if (user == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "Invalid username or password");
-        }
+        this.userRepository.findByUsername(username).orElseThrow(
+            () -> new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "Invalid username or password")
+        );
 
         return this.tokenRotationService.createNewToken(user, request.password());
     }

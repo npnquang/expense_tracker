@@ -1,8 +1,6 @@
 package james.expense_tracker.service;
 
 import java.time.Duration;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,10 +12,10 @@ import io.jsonwebtoken.Claims;
 import james.expense_tracker.dto.user.RegisterUserRequest;
 import james.expense_tracker.dto.user.RegisterUserResponse;
 import james.expense_tracker.dto.user.UpdateProfileRequest;
-import james.expense_tracker.dto.user.UpdateProfileResponse;
 import james.expense_tracker.dto.user.UserInfo;
 import james.expense_tracker.model.User;
 import james.expense_tracker.repository.UserRepository;
+import james.expense_tracker.utils.Utils;
 
 @Service
 public class UserService {
@@ -45,15 +43,15 @@ public class UserService {
         String password = request.password();
         String email = request.email();
 
-        User user = this.userRepository.findByUsername(username);
-        if (user != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
-        }
+        this.userRepository.findByUsername(username)
+            .ifPresent(
+                (u) -> new ResponseStatusException(HttpStatus.CONFLICT, "User already exists")
+            );
 
-        user = this.userRepository.findByEmail(email);
-        if (user != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
-        }
+        this.userRepository.findByEmail(email)
+            .ifPresent(
+                (u) -> new ResponseStatusException(HttpStatus.CONFLICT, "User already exists")
+            );
 
         // this automatically adds the salt to the password
         // and hashes it
@@ -91,28 +89,13 @@ public class UserService {
                         newUser.getRole()));
     }
 
-    private <T> void updateField(
-            T newValue,
-            Function<T, User> findConflict,
-            Consumer<T> setter,
-            String conflictMessage) {
-        if (newValue == null) return;
-
-        if (findConflict.apply(newValue) != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, conflictMessage);
-        }
-
-        setter.accept(newValue);
-    }
-
     @Transactional
-    public UpdateProfileResponse updateProfile(UpdateProfileRequest request) {
-        String newEmail = request.newEmail();
+    public UserInfo updateProfile(UpdateProfileRequest request) {
         String newUsername = request.newUserName();
 
-        if (newEmail == null && newUsername == null) {
+        if (newUsername == null) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Both email and username field are empty");
+                    HttpStatus.BAD_REQUEST, "Username field is empty");
         }
 
         User user =
@@ -122,20 +105,13 @@ public class UserService {
                                 () ->
                                         new ResponseStatusException(
                                                 HttpStatus.NOT_FOUND, "User not found"));
-
-        updateField(
-                request.newEmail(),
-                v -> this.userRepository.findByEmailAndIdNot(v, user.getId()),
-                user::setEmail,
-                "Email already exists");
-
-        updateField(
-                request.newUserName(),
-                v -> this.userRepository.findByUsernameAndIdNot(v, user.getId()),
-                user::setUsername,
-                "Username already exists");
-
-        return new UpdateProfileResponse(
-                new UserInfo(user.getId(), user.getUsername(), user.getEmail(), user.getRole()));
+        
+        if (this.userRepository.findByUsernameAndIdNot(newUsername, user.getId()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email or username already exists");
+        } 
+        Utils.updateField(newUsername, user::setUsername);
+        return new UserInfo(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
+
+    // TODO: implement update email and password logic
 }
