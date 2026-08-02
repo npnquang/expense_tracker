@@ -45,12 +45,12 @@ public class UserService {
 
         this.userRepository.findByUsername(username)
             .ifPresent(
-                (u) -> new ResponseStatusException(HttpStatus.CONFLICT, "User already exists")
+                (u) -> {throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");}
             );
 
         this.userRepository.findByEmail(email)
             .ifPresent(
-                (u) -> new ResponseStatusException(HttpStatus.CONFLICT, "User already exists")
+                (u) -> {throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");}
             );
 
         // this automatically adds the salt to the password
