@@ -29,7 +29,7 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         String username = request.username();
 
-        this.userRepository.findByUsername(username).orElseThrow(
+        User user = this.userRepository.findByUsername(username).orElseThrow(
             () -> new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, "Invalid username or password")
         );
