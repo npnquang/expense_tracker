@@ -1,8 +1,6 @@
 package james.expense_tracker.controller;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import james.expense_tracker.dto.expense.CreateExpenseRequest;
 import james.expense_tracker.dto.expense.CreateExpenseResponse;
 import james.expense_tracker.dto.expense.ExpenseEntry;
+import james.expense_tracker.dto.expense.GetExpenseRequest;
 import james.expense_tracker.dto.expense.UpdateExpenseRequest;
 import james.expense_tracker.model.ExpenseType;
 import james.expense_tracker.service.ExpenseService;
@@ -44,21 +42,22 @@ public class ExpenseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping
+    @PostMapping("/search")
     public ResponseEntity<Page<ExpenseEntry>> getExpenses(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction) {
+            @Valid @RequestBody GetExpenseRequest request
+        ) {
+        
         Page<ExpenseEntry> expenseEntries =
-                expenseService.getExpenses(page, size, sortBy, direction);
+                expenseService.getExpenses(request);
         logger.info(
-                "Retrieved {} expenses (page={}, size={}, sortBy={}, direction={})",
+                "Retrieved {} expenses (page={}, size={}, sortBy={}, direction={}, filters={}, lookback={})",
                 expenseEntries.getNumberOfElements(),
-                page,
-                size,
-                sortBy,
-                direction);
+                request.page(),
+                request.size(),
+                request.sortBy(),
+                request.direction(),
+                request.filters(),
+                request.lookback());
         return ResponseEntity.ok(expenseEntries);
     }
 
@@ -68,27 +67,8 @@ public class ExpenseController {
         logger.info("Retrieved expense with id: {}", id);
         return ResponseEntity.ok(record);
     }
-
-    @GetMapping("/type/{type}")
-    public ResponseEntity<List<ExpenseEntry>> getExpensesByType(@PathVariable ExpenseType type) {
-        List<ExpenseEntry> records = this.expenseService.getExpenseByType(type);
-        logger.info("Retrieved {} expenses of type: {}", records.size(), type);
-        return ResponseEntity.ok(records);
-    }
-
-    @GetMapping("/period")
-    public ResponseEntity<List<ExpenseEntry>> getExpenseByDate(
-            @RequestParam OffsetDateTime startDate, @RequestParam OffsetDateTime endDate) {
-        List<ExpenseEntry> records = this.expenseService.getExpenseByDate(startDate, endDate);
-        logger.info(
-                "Retrieved {} expenses between dates: {} and {}",
-                records.size(),
-                startDate,
-                endDate);
-        return ResponseEntity.ok(records);
-    }
-
-    @PatchMapping("/")
+    
+    @PatchMapping
     public ResponseEntity<Void> updateExpense(@RequestBody UpdateExpenseRequest request) {
         String newDescription = request.newDescription();
         BigDecimal newAmount = request.newAmount();
