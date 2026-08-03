@@ -17,7 +17,7 @@ import james.expense_tracker.spec.SearchCriteria;
 public class ExpenseSpec<T extends Comparable<? super T>> implements Specification<Expense> {
     // T is a class that is comparable to itself or its parent class - comparable friendly type
     private final SearchCriteria<T> criteria;
-    private static final Set<String> VALID_FIELDS = Set.of("createdAt", "type", "amount");
+    private static final Set<String> VALID_FIELDS = Set.of("createdAt", "type", "amount", "userId");
 
     public ExpenseSpec(SearchCriteria<T> criteria) {
         this.criteria = criteria;

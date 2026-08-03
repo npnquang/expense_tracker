@@ -46,8 +46,8 @@ public class ExpenseService {
         this.expenseRepository = expenseRepository;
     }
 
-    public CreateExpenseResponse createExpense(CreateExpenseRequest request) {
-        Expense expense = new Expense(request.description(), request.amount(), request.type());
+    public CreateExpenseResponse createExpense(CreateExpenseRequest request, Long userId) {
+        Expense expense = new Expense(request.description(), request.amount(), request.type(), userId);
         Expense saved = this.expenseRepository.save(expense);
         Long id = saved.getId();
         return new CreateExpenseResponse(id);
@@ -73,7 +73,7 @@ public class ExpenseService {
         }
     }
 
-    public Page<ExpenseEntry> getExpenses(GetExpenseRequest request) {        
+    public Page<ExpenseEntry> getExpenses(GetExpenseRequest request, Long userId) {        
         String sortBy = request.sortBy();
         if (!VALID_SORT_FIELDS.contains(sortBy)) {
             throw new ResponseStatusException(
@@ -95,13 +95,17 @@ public class ExpenseService {
         if (lookbackPeriod == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Invalid lookback period: '%s'. Valid periods: %s", lookback, LOOKBACK_PERIODS.keySet()));
         }
+
+        // create user id filter
+        ExpenseSpec<Long> userSpec = ExpenseSpec.createExpenseSpec("userId", CompareOperation.EQUAL, userId);
+
         // create date spec
         OffsetDateTime dateTime = OffsetDateTime.now().minus(lookbackPeriod);
         ExpenseSpec<OffsetDateTime> dateTimeSpec = ExpenseSpec.createExpenseSpec(sortBy, CompareOperation.GREATER_THAN, dateTime);
+        Specification<Expense> spec = userSpec.and(dateTimeSpec);
 
         Map<String, FilterPair> filters = request.filters();
         // combine the specs
-        Specification<Expense> spec = dateTimeSpec;
         if (filters != null) {
             for (var entry : filters.entrySet()) {
                 FilterPair pair = entry.getValue();
@@ -131,15 +135,15 @@ public class ExpenseService {
                                 e.getCreatedAt()));
     }
 
-    public ExpenseEntry getExpenseById(Long id) {
+    public ExpenseEntry getExpenseById(Long expenseId, Long userId) {
         Expense expense =
                 this.expenseRepository
-                        .findById(id)
+                        .findByIdAndUserId(expenseId, userId)
                         .orElseThrow(
                                 () ->
                                         new ResponseStatusException(
                                                 HttpStatus.NOT_FOUND,
-                                                String.format("Expense of id %d not found", id)));
+                                                String.format("Expense of id %d not found", expenseId)));
         return new ExpenseEntry(
                 expense.getId(),
                 expense.getDescription(),
@@ -148,20 +152,20 @@ public class ExpenseService {
                 expense.getCreatedAt());
     }
 
-    public void deleteExpense(Long id) {
+    public void deleteExpense(Long expenseId, Long userId) {
         Expense expense = this.expenseRepository
-                .findById(id)
+                .findByIdAndUserId(expenseId, userId)
                 .orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Expense of id %d not found", id)));
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Expense of id %d not found", expenseId)));
 
         this.expenseRepository.delete(expense);
     }
 
     @Transactional
-    public void updateExpense(UpdateExpenseRequest request) {
+    public void updateExpense(UpdateExpenseRequest request, Long userId) {
         Long expenseId = request.id();
         Expense expense = this.expenseRepository
-                .findById(expenseId)
+                .findByIdAndUserId(expenseId, userId)
                 .orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Expense of id %d not found", expenseId)));
         
