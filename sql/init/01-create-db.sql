@@ -28,7 +28,9 @@ CREATE TABLE expense (
     description VARCHAR(255) NOT NULL,
     amount NUMERIC(10, 2) NOT NULL,
     type expense_type NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT NOW()
+    created_at timestamptz NOT NULL DEFAULT NOW(),
+    user_id BIGINT NOT NULL,
+    constraint expense_user_fk Foreign Key (user_id) REFERENCES user_info(id)
 );
 
 CREATE INDEX expense_user_time ON expense (

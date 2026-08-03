@@ -39,12 +39,16 @@ public class Expense {
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
     protected Expense() {}
 
-    public Expense(String description, BigDecimal amount, ExpenseType type) {
+    public Expense(String description, BigDecimal amount, ExpenseType type, Long userId) {
         this.description = description;
         this.amount = amount;
         this.type = type;
+        this.userId = userId;
     }
 
     public Long getId() {
@@ -65,6 +69,10 @@ public class Expense {
 
     public OffsetDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 
     public void setDescription(String description) {
