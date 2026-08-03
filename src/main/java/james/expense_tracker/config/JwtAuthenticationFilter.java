@@ -9,13 +9,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.jspecify.annotations.NonNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ResponseStatusException;
 
 import io.jsonwebtoken.Claims;
+import james.expense_tracker.dto.auth.CustomAuthPrincipal;
 import james.expense_tracker.service.JwtService;
 
 @Component
@@ -55,15 +58,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Long userId = claims.get("uid", Long.class);
             String role = claims.get("role", String.class);
 
+            if (role == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid role");
+            }
+
             if (username != null
                     && SecurityContextHolder.getContext().getAuthentication() == null) {
                 List<SimpleGrantedAuthority> authorities =
                         role != null
-                                ? List.of(new SimpleGrantedAuthority("ROLE_" + role))
-                                : List.of(new SimpleGrantedAuthority("ROLE_USER"));
-
+                                ? List.of(new SimpleGrantedAuthority(role))
+                                : List.of(new SimpleGrantedAuthority("USER"));
+                
+                CustomAuthPrincipal principal = new CustomAuthPrincipal(userId, username, role);
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(username, userId, authorities);
+                        new UsernamePasswordAuthenticationToken(principal, userId, authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
