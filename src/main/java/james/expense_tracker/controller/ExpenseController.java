@@ -90,4 +90,11 @@ public class ExpenseController {
         
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @DeleteMapping("/id/{id}")
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long id, @AuthenticationPrincipal CustomAuthPrincipal principal) {
+        this.expenseService.deleteExpense(id, principal.id());
+        logger.info("Deleted expense with id={} of user id={}", id, principal.id());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
