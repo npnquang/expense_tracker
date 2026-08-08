@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS expense CASCADE;
 
+DROP TABLE IF EXISTS user_info CASCADE;
+
 DROP TYPE IF EXISTS expense_type;
 
 CREATE TYPE expense_type AS ENUM(
@@ -30,7 +32,7 @@ CREATE TABLE expense (
     type expense_type NOT NULL,
     created_at timestamptz NOT NULL DEFAULT NOW(),
     user_id BIGINT NOT NULL,
-    constraint expense_user_fk Foreign Key (user_id) REFERENCES user_info(id)
+    CONSTRAINT expense_user_fk FOREIGN Key (user_id) REFERENCES user_info (id)
 );
 
 CREATE INDEX expense_user_time ON expense (
