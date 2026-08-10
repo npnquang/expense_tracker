@@ -22,7 +22,9 @@ CREATE TABLE user_info (
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    user_role user_role_enum NOT NULL DEFAULT 'USER'
+    user_role user_role_enum NOT NULL DEFAULT 'USER',
+    CONSTRAINT unique_username UNIQUE (username),
+    CONSTRAINT unique_email UNIQUE (email)
 );
 
 CREATE TABLE expense (
